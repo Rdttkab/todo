@@ -3,7 +3,9 @@ const connect = require("./config/db");
 const { json } = require("express");
 const todoRoute = require("./router/todoRoutes");
 
-connect();
+const url = process.env.MONGO_DB_CLOUD;
+
+connect(url);
 
 const app = express();
 app.use(json());

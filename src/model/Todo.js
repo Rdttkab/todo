@@ -4,16 +4,16 @@ const todoSchema = new Schema(
   {
     title: {
       type: String,
-      required: true,
+      require: true,
     },
     description: {
       type: String,
-      required: true,
+      require: true,
     },
   },
   { timestamps: true }
 );
 
-const TodoModel = model("todo", todoSchema);
+const Todos = model("Todos", todoSchema);
 
-module.exports = TodoModel;
+module.exports = Todos;

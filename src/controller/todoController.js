@@ -1,8 +1,8 @@
-const Todo = require("../model/Todo");
+const Todos = require("../model/Todo");
 
 exports.getAllTodo = async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todos.find();
 
     if (todos.length === 0)
       return res
@@ -27,11 +27,11 @@ exports.getAllTodo = async (req, res) => {
 exports.getTodo = async (req, res) => {
   try {
     const id = { _id: req.params.id };
-    const todo = await Todo.findOne(id);
+    const todo = await Todos.findOne(id);
 
     if (!todo)
       return res
-        .status(400)
+        .status(404)
         .json({ success: false, message: "Todo is not found" });
 
     res.status(200).json({ success: true, message: "Todo is found", todo });
@@ -47,7 +47,7 @@ exports.getTodo = async (req, res) => {
 exports.createTodo = async (req, res) => {
   try {
     const newTodo = await req.body;
-    const todo = await Todo.create(newTodo);
+    const todo = await Todos.create(newTodo);
 
     if (!todo)
       return res.status(400).json({
@@ -73,7 +73,7 @@ exports.updateTodo = async (req, res) => {
   try {
     const id = { _id: req.params.id };
     const todo = await req.body;
-    const update = await Todo.findOneAndUpdate(id, todo, { new: true });
+    const update = await Todos.findOneAndUpdate(id, todo, { new: true });
 
     if (!update)
       return res.status(400).json({
@@ -98,7 +98,7 @@ exports.updateTodo = async (req, res) => {
 exports.deleteTodo = async (req, res) => {
   try {
     const id = { _id: req.params.id };
-    const deleted = await Todo.findByIdAndRemove(id);
+    const deleted = await Todos.findByIdAndRemove(id);
 
     if (!deleted)
       return res.status(400).json({
