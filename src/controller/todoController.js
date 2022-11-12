@@ -46,10 +46,10 @@ exports.getTodo = async (req, res) => {
 
 exports.createTodo = async (req, res) => {
   try {
-    const newTodo = await req.body;
-    const todo = await Todos.create(newTodo);
+    const todo = await req.body;
+    const created = await Todos.create(todo);
 
-    if (!todo)
+    if (!created)
       return res.status(400).json({
         success: false,
         message: "Todo creation failed",
@@ -58,7 +58,7 @@ exports.createTodo = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Todo created successfully",
-      todo,
+      todo: created,
     });
   } catch (error) {
     res.status(500).json({
@@ -83,8 +83,8 @@ exports.updateTodo = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Todo ${id} updated successfully`,
-      todo,
+      message: `Todo ${id._id} updated successfully`,
+      todo: update,
     });
   } catch (error) {
     res.status(500).json({
@@ -108,7 +108,8 @@ exports.deleteTodo = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Todo ${id} deleted successfully`,
+      message: `Todo ${id._id} deleted successfully`,
+      todo: deleted,
     });
   } catch (error) {
     res.status(500).json({
