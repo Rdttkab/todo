@@ -1,5 +1,5 @@
 const express = require("express");
-const connect = require("./config/database");
+const connect = require("./config/db");
 const { json } = require("express");
 const todoRoute = require("./router/todoRoutes");
 
@@ -10,11 +10,14 @@ app.use(json());
 
 app.get("/", (req, res) => {
   try {
-    res
-      .status(200)
-      .json({ message: "Booking Flight API, See Documentation for all APIs" });
+    res.status(200).json({
+      success: true,
+      message: "Todo API, See Documentation for all APIs",
+    });
   } catch (error) {
-    res.status(500).json({ error });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 });
 

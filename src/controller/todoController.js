@@ -3,9 +3,20 @@ const Todo = require("../model/Todo");
 exports.getAllTodo = async (req, res) => {
   try {
     const todos = await Todo.find();
-    res.status(200).json({ success: true, message: "All todos", todos });
-  } catch (error) {
+
+    if (todos.length === 0)
+      return res
+        .status(404)
+        .json({ success: false, message: "No todos is found" });
+
     res.status(200).json({
+      success: true,
+      message: "All todos",
+      todos,
+      count: todos.length,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
       message: "Internal Server Error",
       error: error.message,
@@ -13,71 +24,97 @@ exports.getAllTodo = async (req, res) => {
   }
 };
 
-// app.get("/flight/:id", (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const flight = flights.find((flight) => flight.id === id);
-//     if (flight) {
-//       res.status(200).json({ message: "Flight ${id}", flight });
-//     } else {
-//       res.status(400).json({ message: `Flight ${id} not found` });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ error });
-//   }
-// });
+exports.getTodo = async (req, res) => {
+  try {
+    const id = { _id: req.params.id };
+    const todo = await Todo.findOne(id);
 
-// app.post("/flight", (req, res) => {
-//   try {
-//     const { title, time, price, date } = req.body;
-//     const newFlight = {
-//       id: getId(),
-//       title,
-//       time,
-//       price,
-//       date,
-//     };
+    if (!todo)
+      return res
+        .status(400)
+        .json({ success: false, message: "Todo is not found" });
 
-//     flights.push(newFlight);
+    res.status(200).json({ success: true, message: "Todo is found", todo });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
 
-//     res.status(200).json({ message: "New flight is added", newFlight });
-//   } catch (error) {
-//     res.status(500).json(error.message);
-//   }
-// });
+exports.createTodo = async (req, res) => {
+  try {
+    const newTodo = await req.body;
+    const todo = await Todo.create(newTodo);
 
-// app.put("/flight/:id", (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const flight = flights.find((flight) => flight.id === id);
-//     const { title, time, price, date } = req.body;
-//     flight.title = title;
-//     flight.time = time;
-//     flight.price = price;
-//     flight.date = date;
+    if (!todo)
+      return res.status(400).json({
+        success: false,
+        message: "Todo creation failed",
+      });
 
-//     if (flight) {
-//       res.status(200).json({ message: `Flight ${id} updated`, flight });
-//     } else {
-//       res.status(404).json(`Flight ${id} does not exit`);
-//     }
-//   } catch (error) {
-//     res.status(500).json(error.message);
-//   }
-// });
+    res.status(200).json({
+      success: true,
+      message: "Todo created successfully",
+      todo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
 
-// app.delete("/flight/:id", (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     let flight = flights.find((flight) => flight.id === id);
+exports.updateTodo = async (req, res) => {
+  try {
+    const id = { _id: req.params.id };
+    const todo = await req.body;
+    const update = await Todo.findOneAndUpdate(id, todo, { new: true });
 
-//     if (flight) {
-//       flights.splice(flights.indexOf(flight), 1);
-//       res.status(200).json(`Flight ${id} is deleted`);
-//     } else {
-//       res.status(404).json(`Flight ${id} does not exit`);
-//     }
-//   } catch (error) {
-//     res.status(500).json(error.message);
-//   }
-// });
+    if (!update)
+      return res.status(400).json({
+        success: false,
+        message: "Todo is not updated",
+      });
+
+    res.status(200).json({
+      success: true,
+      message: `Todo ${id} updated successfully`,
+      todo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+exports.deleteTodo = async (req, res) => {
+  try {
+    const id = { _id: req.params.id };
+    const deleted = await Todo.findByIdAndRemove(id);
+
+    if (!deleted)
+      return res.status(400).json({
+        success: false,
+        message: "Todo is not deleted",
+      });
+
+    res.status(200).json({
+      success: true,
+      message: `Todo ${id} deleted successfully`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
